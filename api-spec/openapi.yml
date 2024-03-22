@@ -1,0 +1,34 @@
+openapi: "3.0.2"
+info:
+  title: syppi🧃 / typsi🍹 API
+  description: The API that powers💪 syppi🧃 / typsi🍹
+  version: "1.0"
+servers:
+  - url: http://localhost:3000
+    description: Test Endpoint
+
+paths:
+  /users:
+    get:
+      description: "Query all users"
+      responses:
+        "200":
+          description: OK
+  /drinks:
+    get:
+      description: "Query all drinks"
+      responses:
+        "200":
+          description: OK
+  /places:
+    get:
+      description: "Query all places"
+      responses:
+        "200":
+          description: OK
+  /categories:
+    get:
+      description: "Query all categories"
+      responses:
+        "200":
+          description: OK
