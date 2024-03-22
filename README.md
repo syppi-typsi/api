@@ -1,2 +1,2 @@
-# typsi
-A rating platform for alcoholic beverages
+# syppi🧃 / typsi🍹
+A rating platform for beverages
