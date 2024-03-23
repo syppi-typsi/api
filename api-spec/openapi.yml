@@ -1,7 +1,7 @@
 openapi: "3.0.2"
 info:
   title: syppi🧃 / typsi🍹 API
-  description: The API that powers💪 syppi🧃 / typsi🍹
+  description: The API that powers 💪 syppi🧃 / typsi🍹
   version: "1.0"
 servers:
   - url: http://localhost:3000
