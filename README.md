@@ -1,2 +1,2 @@
 # syppi🧃 / typsi🍹
-A rating platform for beverages
+The API that powers💪 syppi🧃 / typsi🍹
