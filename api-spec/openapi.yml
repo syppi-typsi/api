@@ -6,29 +6,184 @@ info:
 servers:
   - url: http://localhost:3000
     description: Test Endpoint
-
+tags:
+  - name: users
+    description: User operations
+  - name: drinks
+    description: Drink operations
+  - name: places
+    description: Place operations
+  - name: categories
+    description: Category operations
 paths:
   /users:
     get:
+      tags:
+        - users
       description: "Query all users"
+      parameters: []
       responses:
         "200":
           description: OK
+  /users/{id}:
+    get:
+      tags:
+        - users
+      description: "Query user by ID"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/json":
+              examples:
+                "Human Name":
+                  value:
+                    {
+                      "username": "human_name",
+                      "first_name": "Human",
+                      "last_name": "Name",
+                      "email": "human@example.com",
+                      "registered_on": "2024-03-14T12:34:56",
+                    }
   /drinks:
     get:
+      tags:
+        - drinks
       description: "Query all drinks"
       responses:
         "200":
           description: OK
+    post:
+      tags:
+        - drinks
+      description: ""
+      parameters: []
+      responses:
+        "200":
+          description: OK
+
   /places:
     get:
+      tags:
+        - places
       description: "Query all places"
       responses:
         "200":
           description: OK
   /categories:
     get:
+      tags:
+        - categories
       description: "Query all categories"
+      responses:
+        "200":
+          description: OK
+  /drinks/{id}:
+    get:
+      tags:
+        - drinks
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/json":
+              examples:
+                "Jägermeister":
+                  value:
+                    {
+                      "id": 46,
+                      "name": "Jägermeister",
+                      "producer": "Mast-Jägermeister SE",
+                      "brand": "Jägermeister",
+                      "description": "Jägermeister (/ˈjeɪɡərmaɪstər/) is a German digestif made with 56 herbs and spices. Developed in 1934 by Wilhelm and Curt Mast, it has an alcohol by volume of 35% (61 degrees proof, or US 70 proof). The recipe has not changed since its creation and continues to be served in its signature green glass bottle. It is the flagship product of Mast-Jägermeister SE headquartered in Wolfenbüttel, Germany.",
+                      "category": 42,
+                      "added_on": "2024-03-14T12:34:56",
+                      "rating": 78,
+                      "volumes": [0.33, 0.5, 1.0],
+                      "abv": 0.35,
+                      "places": [1, 3, 4],
+                      "ingredients": "56 herbs, fruits, roots, and spices, including citrus peel, licorice, anise, poppy seeds, saffron, ginger, juniper berries, and ginseng",
+                      "nutritional_value":
+                        {
+                          "serving": 20,
+                          "energy": { "kJ": 209, "kcal": 50 },
+                          "fat": 0.0,
+                          "sat_fat": null,
+                          "carbs": 2.8,
+                          "sugar": 2.6,
+                          "protein": 0.0,
+                          "fiber": null,
+                          "salt": null,
+                        },
+                    }
+    delete:
+      tags:
+        - drinks
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+    patch:
+      tags:
+        - drinks
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+  /drinks/{id}/rate:
+    put:
+      tags:
+        - drinks
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        # - name: rating
+        #   in: query
+        #   required: true
+        #   schema:
+        #     type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+            examples:
+              test:
+                summary: Example
+                value:
+                  rating: 70
       responses:
         "200":
           description: OK
