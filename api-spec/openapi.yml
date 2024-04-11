@@ -9,19 +9,15 @@ servers:
 
 components:
   schemas:
-    drink:
+    drink_data:
       type: object
-      description: "A drink object"
+      description: "A drink objects data"
       required:
-        - id
         - name
         - category
         - added_on
         - producer
       properties:
-        id:
-          type: integer
-          description: "ID of the drink"
         name:
           type: string
           description: "Name of the drink"
@@ -89,6 +85,18 @@ components:
               type: number
             salt:
               type: number
+    drink:
+      type: object
+      description: "A drink object"
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              description: "ID of the drink"
+        - $ref: "#/components/schemas/drink_data"
     drinks:
       type: object
       description: "An object containing an array of drink objects"
@@ -251,11 +259,20 @@ paths:
     post:
       tags:
         - drinks
-      description: ""
+      description: "Add a drink to the database"
       parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/drink_data"
       responses:
         "200":
-          description: OK
+          description: Responds back with the added drink
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/drink"
 
   /places:
     get:
