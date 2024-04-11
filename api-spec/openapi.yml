@@ -89,6 +89,33 @@ components:
               type: number
             salt:
               type: number
+    drinks:
+      type: object
+      description: "An object containing an array of drink objects"
+      properties:
+        drinks:
+          type: array
+          description: "Array of drinks"
+          items:
+            $ref: "#/components/schemas/drink"
+    query_drinks:
+      type: object
+      description: "Query parameters for GET /drinks"
+      properties:
+        search:
+          type: string
+          description: "Search query from the search bar"
+        fields:
+          type: array
+          description: "Whitelist of fields to return with the response, except for ID which is always returned"
+          items:
+            type: string
+        limit:
+          type: integer
+          description: "The amount of entries to return with"
+        cursor:
+          type: integer
+          description: "A pointer from where to start enumerating data from, used instead of a 'skip' parameter"
 
 tags:
   - name: users
@@ -145,18 +172,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                search:
-                  type: string
-                fields:
-                  type: array
-                  items:
-                    type: string
-                limit:
-                  type: integer
-                cursor:
-                  type: integer
+              $ref: "#/components/schemas/query_drinks"
             examples:
               test:
                 summary: Example
@@ -168,6 +184,70 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/drinks"
+              examples:
+                "Example":
+                  value:
+                    {
+                      "drinks":
+                        [
+                          {
+                            "id": 46,
+                            "name": "Jägermeister",
+                            "producer": "Mast-Jägermeister SE",
+                            "brand": "Jägermeister",
+                            "description": "Jägermeister (/ˈjeɪɡərmaɪstər/) is a German digestif made with 56 herbs and spices. Developed in 1934 by Wilhelm and Curt Mast, the recipe has not changed since its creation and continues to be served in its signature green glass bottle. It is the flagship product of Mast-Jägermeister SE headquartered in Wolfenbüttel, Germany. (Wikipedia)",
+                            "product_image": "https://example.com/img/jagermeister.png",
+                            "category": 42,
+                            "added_on": "2024-03-14T12:34:56",
+                            "rating": 78,
+                            "volumes": [330, 500, 1000],
+                            "abv": 0.35,
+                            "places": [1, 3, 4],
+                            "nutritional_value":
+                              {
+                                "serving": 20,
+                                "energy": { "kJ": 209, "kcal": 50 },
+                                "fat": 0.0,
+                                "sat_fat": null,
+                                "carbs": 2.8,
+                                "sugar": 2.6,
+                                "protein": 0.0,
+                                "fiber": null,
+                                "salt": null,
+                              },
+                          },
+                          {
+                            "id": 52,
+                            "name": "A. Le Coq Long Drink Grapefruit",
+                            "producer": "A. Le Coq AS",
+                            "brand": "A. Le Coq",
+                            "description": "The taste of the classic Long Drink Grapefruit, made from real gin, is dominated by the juicy character of grapefruit and as we know, juicy character is welcome in any company. Pleasantly sweet and quite bitter, this drink will spark long, fun conversations and suggests more music to lift your spirits!",
+                            "product_image": "https://example.com/img/alecoq_long_grape.png",
+                            "category": 21,
+                            "added_on": "2024-03-14T12:34:56",
+                            "rating": 71,
+                            "volumes": [330],
+                            "abv": 0.055,
+                            "places": [1, 3, 4],
+                            "nutritional_value":
+                              {
+                                "serving": 100,
+                                "energy": { "kJ": 223, "kcal": 53 },
+                                "fat": 0.0,
+                                "sat_fat": 0.0,
+                                "carbs": 5.5,
+                                "sugar": 5.5,
+                                "protein": 0.0,
+                                "fiber": 0.0,
+                                "salt": 0.0,
+                              },
+                          },
+                        ],
+                    }
     post:
       tags:
         - drinks
@@ -238,6 +318,34 @@ paths:
                           "protein": 0.0,
                           "fiber": null,
                           "salt": null,
+                        },
+                    }
+                "A. Le Coq Long Drink Grapefruit":
+                  value:
+                    {
+                      "id": 52,
+                      "name": "A. Le Coq Long Drink Grapefruit",
+                      "producer": "A. Le Coq AS",
+                      "brand": "A. Le Coq",
+                      "description": "The taste of the classic Long Drink Grapefruit, made from real gin, is dominated by the juicy character of grapefruit and as we know, juicy character is welcome in any company. Pleasantly sweet and quite bitter, this drink will spark long, fun conversations and suggests more music to lift your spirits!",
+                      "product_image": "https://example.com/img/alecoq_long_grape.png",
+                      "category": 21,
+                      "added_on": "2024-03-14T12:34:56",
+                      "rating": 71,
+                      "volumes": [330],
+                      "abv": 0.055,
+                      "places": [1, 3, 4],
+                      "nutritional_value":
+                        {
+                          "serving": 100,
+                          "energy": { "kJ": 223, "kcal": 53 },
+                          "fat": 0.0,
+                          "sat_fat": 0.0,
+                          "carbs": 5.5,
+                          "sugar": 5.5,
+                          "protein": 0.0,
+                          "fiber": 0.0,
+                          "salt": 0.0,
                         },
                     }
     delete:
