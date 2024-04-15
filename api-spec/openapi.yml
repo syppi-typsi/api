@@ -106,25 +106,6 @@ components:
           description: "Array of drinks"
           items:
             $ref: "#/components/schemas/drink"
-    query_drinks:
-      type: object
-      description: "Query parameters for GET /drinks"
-      properties:
-        search:
-          type: string
-          description: "Search query from the search bar"
-        fields:
-          type: array
-          description: "Whitelist of fields to return with the response, except for ID which is always returned"
-          items:
-            type: string
-        limit:
-          type: integer
-          description: "The amount of entries to return with"
-        cursor:
-          type: integer
-          description: "A pointer from where to start enumerating data from, used instead of a 'skip' parameter"
-    
     user_data:
       type: object
       description: "A user objects data"
@@ -147,7 +128,6 @@ components:
         registered_on:
           type: string
           description: "ISO 8601 date and time of when the user was added"
-
     user:
       type: object
       description: "A user object"
@@ -160,7 +140,6 @@ components:
               type: integer
               description: "ID of the user"
         - $ref: "#/components/schemas/user_data"
-
     users:
       type: object
       description: "An object containing an array of user objects"
@@ -170,26 +149,6 @@ components:
           description: "Array of users"
           items:
             $ref: "#/components/schemas/user"
-
-    query_users:
-      type: object
-      description: "Query parameters for GET /users"
-      properties:
-        search:
-          type: string
-          description: "Search query from the search bar"
-        fields:
-          type: array
-          description: "Whitelist of fields to return with the response, except for ID which is always returned"
-          items:
-            type: string
-        limit:
-          type: integer
-          description: "The amount of entries to return with"
-        cursor:
-          type: integer
-          description: "A pointer from where to start enumerating data from, used instead of a 'skip' parameter"
-
     place_data:
       type: object
       description: "A place objects data"
@@ -203,7 +162,6 @@ components:
         address:
           type: string
           description: "Address of place"
-
     place:
       type: object
       description: "A place object"
@@ -216,7 +174,6 @@ components:
               type: integer
               description: "ID of the place"
         - $ref: "#/components/schemas/place_data"
-
     places:
       type: object
       description: "An object containing an array of place objects"
@@ -226,39 +183,19 @@ components:
           description: "Array of places"
           items:
             $ref: "#/components/schemas/place"
-
-    query_places:
-      type: object
-      description: "Query parameters for GET /places"
-      properties:
-        search:
-          type: string
-          description: "Search query from the search bar"
-        fields:
-          type: array
-          description: "Whitelist of fields to return with the response, except for ID which is always returned"
-          items:
-            type: string
-        limit:
-          type: integer
-          description: "The amount of entries to return with"
-        cursor:
-          type: integer
-          description: "A pointer from where to start enumerating data from, used instead of a 'skip' parameter"
-
-    category_data_one:
+    category_data:
       type: object
       description: "A category objects data"
       required:
         - name
       properties:
-        parent_category:
-          $ref: "#/components/schemas/category_one"
         name:
           type: string
           description: "Name of category"
-
-    category_one:
+        parent:
+          type: integer
+          description: "ID of parent"
+    category:
       type: object
       description: "A category object"
       allOf:
@@ -269,33 +206,7 @@ components:
             id:
               type: integer
               description: "ID of the category"
-        - $ref: "#/components/schemas/category_data_one"
-
-    category_data_all:
-      type: object
-      description: "A category objects data"
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          description: "Name of category"
-        children:
-            $ref: "#/components/schemas/categories"
-
-    category_all:
-      type: object
-      description: "A category object"
-      allOf:
-        - type: object
-          required:
-            - id
-          properties:
-            id:
-              type: integer
-              description: "ID of the category"
-        - $ref: "#/components/schemas/category_data_all"
-
+        - $ref: "#/components/schemas/category_data"
     categories:
       type: object
       description: "An object containing an array of category objects"
@@ -304,26 +215,36 @@ components:
           type: array
           description: "Array of categories"
           items:
-            $ref: "#/components/schemas/category_all"
-
-    query_categories:
+            $ref: "#/components/schemas/category"
+    query_simple:
       type: object
-      description: "Query parameters for GET /categories"
+      description: "Simple query parameters"
       properties:
         search:
           type: string
           description: "Search query from the search bar"
         fields:
           type: array
-          description: "Whitelist of fields to return with the response, except for ID which is always returned"
+          description: "Whitelist of fields to return with the response, except for ID which is always returned. If ommited, response will return all fields"
           items:
             type: string
-        limit:
-          type: integer
-          description: "The amount of entries to return with"
-        cursor:
-          type: integer
-          description: "A pointer from where to start enumerating data from, used instead of a 'skip' parameter"
+
+    query_limited:
+      type: object
+      description: "Limited query parameters"
+      allOf:
+        - $ref: "#/components/schemas/query_simple"
+        - type: object
+          required:
+            - limit
+            - cursor
+          properties:
+            limit:
+              type: integer
+              description: "The amount of entries to return with"
+            cursor:
+              type: integer
+              description: "A pointer from where to start enumerating data from, used instead of a 'skip' parameter"
 
 tags:
   - name: users
@@ -398,7 +319,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/query_drinks"
+              $ref: "#/components/schemas/query_limited"
             examples:
               test:
                 summary: Example
