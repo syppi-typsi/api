@@ -228,6 +228,7 @@ components:
           description: "Whitelist of fields to return with the response, except for ID which is always returned. If ommited, response will return all fields"
           items:
             type: string
+
     query_limited:
       type: object
       description: "Limited query parameters"
@@ -291,6 +292,24 @@ paths:
                       "email": "human@example.com",
                       "registered_on": "2024-03-14T12:34:56",
                     }
+
+  /places:
+    get:
+      tags:
+        - places
+      description: "Query all places"
+      responses:
+        "200":
+          description: OK
+  /categories:
+    get:
+      tags:
+        - categories
+      description: "Query all categories"
+      responses:
+        "200":
+          description: OK
+
   /drinks:
     get:
       tags:
@@ -394,22 +413,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/drink"
 
-  /places:
-    get:
-      tags:
-        - places
-      description: "Query all places"
-      responses:
-        "200":
-          description: OK
-  /categories:
-    get:
-      tags:
-        - categories
-      description: "Query all categories"
-      responses:
-        "200":
-          description: OK
   /drinks/{id}:
     get:
       tags:
