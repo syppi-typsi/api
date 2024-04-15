@@ -118,9 +118,6 @@ components:
     user_data:
       type: object
       description: "A user objects data"
-      required:
-        - username
-        - email
       properties:
         username:
           type: string
@@ -137,6 +134,14 @@ components:
         registered_on:
           type: string
           description: "ISO 8601 date and time of when the user was added"
+    user_required:
+      type: object
+      description: "A user objects data, with required fields"
+      required:
+        - username
+        - email
+      allOf:
+        - $ref: "#/components/schemas/user_data"
     user:
       type: object
       description: "A user object"
@@ -148,7 +153,7 @@ components:
             id:
               type: integer
               description: "ID of the user"
-        - $ref: "#/components/schemas/user_data"
+        - $ref: "#/components/schemas/user_required"
     users:
       type: object
       description: "An object containing an array of user objects"
@@ -161,9 +166,6 @@ components:
     place_data:
       type: object
       description: "A place objects data"
-      required:
-        - name
-        - address
       properties:
         name:
           type: string
@@ -171,6 +173,14 @@ components:
         address:
           type: string
           description: "Address of place"
+    place_required:
+      type: object
+      description: "A place objects data, with required fields"
+      required:
+        - name
+        - address
+      allOf:
+        - $ref: "#/components/schemas/place_data"
     place:
       type: object
       description: "A place object"
@@ -182,7 +192,7 @@ components:
             id:
               type: integer
               description: "ID of the place"
-        - $ref: "#/components/schemas/place_data"
+        - $ref: "#/components/schemas/place_required"
     places:
       type: object
       description: "An object containing an array of place objects"
@@ -195,8 +205,6 @@ components:
     category_data:
       type: object
       description: "A category objects data"
-      required:
-        - name
       properties:
         name:
           type: string
@@ -204,6 +212,13 @@ components:
         parent:
           type: integer
           description: "ID of parent"
+    category_required:
+      type: object
+      description: "A category objects data, with required fields"
+      required:
+        - name
+      allOf:
+        - $ref: "#/components/schemas/category_data"
     category:
       type: object
       description: "A category object"
@@ -215,7 +230,7 @@ components:
             id:
               type: integer
               description: "ID of the category"
-        - $ref: "#/components/schemas/category_data"
+        - $ref: "#/components/schemas/category_required"
     categories:
       type: object
       description: "An object containing an array of category objects"
@@ -433,10 +448,38 @@ paths:
       tags:
         - users
       description: "Query all users"
-      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query_limited"
+            examples:
+              example1:
+                $ref: "#/components/examples/query_limited"
       responses:
         "200":
           description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/users"
+    post:
+      tags:
+        - users
+      description: "Add a user to the database"
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/user_required"
+      responses:
+        "200":
+          description: Responds back with the added place
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"              
   /users/{id}:
     get:
       tags:
@@ -453,26 +496,227 @@ paths:
           description: OK
           content:
             "application/json":
+              schema:
+                $ref: "#/components/schemas/user"
               examples:
                 example1:
                   $ref: "#/components/examples/humanName"
-
+    delete:
+      tags:
+        - users
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Responds with user that was just deleted
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/user"
+    patch:
+      tags:
+        - users
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/user_data"
+    
   /places:
     get:
       tags:
         - places
       description: "Query all places"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query_limited"
+            examples:
+              example1:
+                $ref: "#/components/examples/query_limited"
       responses:
         "200":
           description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/places"
+    post:
+      tags:
+        - places
+      description: "Add a place to the database"
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/place_required"
+      responses:
+        "200":
+          description: Responds back with the added place
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/place" 
+  /places/{id}:
+    get:
+      tags:
+        - places
+      description: "Query place by ID"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/place"
+              
+    delete:
+      tags:
+        - places
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Responds with place that was just deleted
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/place"
+    patch:
+      tags:
+        - places
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/place_data"
+  
   /categories:
     get:
       tags:
         - categories
       description: "Query all categories"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/query_limited"
+            examples:
+              example1:
+                $ref: "#/components/examples/query_limited"
       responses:
         "200":
           description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/categories"
+    post:
+      tags:
+        - categories
+      description: "Add a category to the database"
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/category_required"
+      responses:
+        "200":
+          description: Responds back with the added category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/category"
+  /categories/{id}:
+    get:
+      tags:
+        - categories
+      description: "Query category by ID"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/category"
+              
+    delete:
+      tags:
+        - categories
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Responds with category that was just deleted
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/category"
+    patch:
+      tags:
+        - categories
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/category_data"
 
   /drinks:
     get:
@@ -517,7 +761,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/drink"
-
   /drinks/{id}:
     get:
       tags:
