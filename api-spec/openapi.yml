@@ -371,25 +371,6 @@ paths:
                       "email": "human@example.com",
                       "registered_on": "2024-03-14T12:34:56",
                     }
-
-  /places:
-    get:
-      tags:
-        - places
-      description: "Query all places"
-      responses:
-        "200":
-          description: OK
-          
-  /categories:
-    get:
-      tags:
-        - categories
-      description: "Query all categories"
-      responses:
-        "200":
-          description: OK
-
   /drinks:
     get:
       tags:
@@ -493,6 +474,22 @@ paths:
               schema:
                 $ref: "#/components/schemas/drink"
 
+  /places:
+    get:
+      tags:
+        - places
+      description: "Query all places"
+      responses:
+        "200":
+          description: OK
+  /categories:
+    get:
+      tags:
+        - categories
+      description: "Query all categories"
+      responses:
+        "200":
+          description: OK
   /drinks/{id}:
     get:
       tags:
