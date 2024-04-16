@@ -301,27 +301,27 @@ components:
           "address": "Ülikooli 5, 51003 Tartu",
         }
     Atso:
-      summary: "Atso Baar"
+      summary: "Atso Bar"
       value:
         {
           "id": 7,
-          "name": "Atso Baar",
+          "name": "Atso Bar",
           "address": "Rüütli 12, 51007 Tartu",
         }
-    Kokteilid:
-      summary: "Kokteilid"
+    Cocktails:
+      summary: "Cocktails"
       value:
         {
           "id": 89,
-          "name": "Kokteilid",
+          "name": "Cocktails",
           "parent": 56,
         }
-    Long drinkid:
-      summary: "Long drinkid"
+    Long drinks:
+      summary: "Long drinks"
       value:
         {
           "id": 144,
-          "name": "Long drinkid",
+          "name": "Long drinks",
           "parent": 9,
         }
     query_limited:
