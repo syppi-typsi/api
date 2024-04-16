@@ -259,11 +259,55 @@ components:
       summary: "Human Name"
       value:
         {
+          "id": 86,
           "username": "human_name",
           "first_name": "Human",
           "last_name": "Name",
           "email": "human@example.com",
           "registered_on": "2024-03-14T12:34:56",
+        }
+    usernameOnly:
+      summary: "username only"
+      value:
+        {
+          "id": 69,
+          "username": "username_only",
+          "first_name": "",
+          "last_name": "",
+          "email": "human@example.com",
+          "registered_on": "2024-03-14T12:34:56",
+        }
+    Illegaard:
+      summary: "Illegaard"
+      value:
+        {
+          "id": 6,
+          "name": "Illegaard",
+          "address": "Ülikooli 5, 51003 Tartu",
+        }
+    Atso:
+      summary: "Atso Baar"
+      value:
+        {
+          "id": 7,
+          "name": "Atso Baar",
+          "address": "Rüütli 12, 51007 Tartu",
+        }
+    Kokteilid:
+      summary: "Kokteilid"
+      value:
+        {
+          "id": 89,
+          "name": "Kokteilid",
+          "parent": 56,
+        }
+    Long drinkid:
+      summary: "Long drinkid"
+      value:
+        {
+          "id": 144,
+          "name": "Long drinkid",
+          "parent": 9,
         }
     query_limited:
       summary: Search for "ice"
@@ -416,6 +460,7 @@ components:
               },
             ],
         }
+    
 
 tags:
   - name: users
