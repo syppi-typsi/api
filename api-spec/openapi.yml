@@ -295,35 +295,17 @@ components:
     Illegaard:
       summary: "Illegaard"
       value:
-        {
-          "id": 6,
-          "name": "Illegaard",
-          "address": "Ülikooli 5, 51003 Tartu",
-        }
+        { "id": 6, "name": "Illegaard", "address": "Ülikooli 5, 51003 Tartu" }
     Atso:
       summary: "Atso Bar"
       value:
-        {
-          "id": 7,
-          "name": "Atso Bar",
-          "address": "Rüütli 12, 51007 Tartu",
-        }
+        { "id": 7, "name": "Atso Bar", "address": "Rüütli 12, 51007 Tartu" }
     Cocktails:
       summary: "Cocktails"
-      value:
-        {
-          "id": 89,
-          "name": "Cocktails",
-          "parent": 56,
-        }
+      value: { "id": 89, "name": "Cocktails", "parent": 56 }
     Long drinks:
       summary: "Long drinks"
-      value:
-        {
-          "id": 144,
-          "name": "Long drinks",
-          "parent": 9,
-        }
+      value: { "id": 144, "name": "Long drinks", "parent": 9 }
     query_limited:
       summary: Search for "ice"
       value:
@@ -475,7 +457,6 @@ components:
               },
             ],
         }
-    
 
 tags:
   - name: users
@@ -524,7 +505,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/user"              
+                $ref: "#/components/schemas/user"
   /users/{id}:
     get:
       tags:
@@ -580,7 +561,7 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/user_data"
-    
+
   /places:
     get:
       tags:
@@ -617,7 +598,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/place" 
+                $ref: "#/components/schemas/place"
   /places/{id}:
     get:
       tags:
@@ -636,7 +617,7 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/place"
-              
+
     delete:
       tags:
         - places
@@ -671,7 +652,7 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/place_data"
-  
+
   /categories:
     get:
       tags:
@@ -727,7 +708,7 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/category"
-              
+
     delete:
       tags:
         - categories
