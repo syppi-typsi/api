@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import "dotenv/config";
 
 import users from "./endpoints/users";
 import drinks from "./endpoints/drinks";
