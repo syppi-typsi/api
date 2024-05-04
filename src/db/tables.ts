@@ -10,8 +10,8 @@ export const execute = async() => {
     }
 
     try {
-        const res = await query(placeTable, []);
-        console.log('If does not exists, table "place" is created');
+        const res = await query(placesTable, []);
+        console.log('If does not exists, table "places" is created');
     } catch (error) {
         console.error(error);
     }
@@ -62,7 +62,7 @@ const usersTable = `CREATE TABLE IF NOT EXISTS "users" (
     PRIMARY KEY("id")
     );`;
 
-const placeTable = `CREATE TABLE IF NOT EXISTS "place" (
+const placesTable = `CREATE TABLE IF NOT EXISTS "places" (
     "id" serial NOT NULL,
     "name" varchar(255) NOT NULL,
     "address" varchar(255) NOT NULL,
@@ -102,7 +102,7 @@ const ratingsTable = `CREATE TABLE IF NOT EXISTS "ratings" (
 
 const alterTables = `ALTER TABLE "drink" 
     ADD CONSTRAINT "drink_place"
-    FOREIGN KEY("places") REFERENCES "place"("id")
+    FOREIGN KEY("places") REFERENCES "places"("id")
     ON UPDATE CASCADE ON DELETE CASCADE;
 
     ALTER TABLE "drink"
