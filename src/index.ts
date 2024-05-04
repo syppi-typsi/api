@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { execute } from "./db/tables"
 import "dotenv/config";
 
 import users from "./endpoints/users";
@@ -8,6 +9,8 @@ import places from "./endpoints/places";
 import categories from "./endpoints/categories";
 
 const app = new Hono();
+
+execute()
 
 app.get("/", (c) => {
 	return c.text("Hello Hono!");
