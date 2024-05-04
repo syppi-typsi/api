@@ -22,6 +22,11 @@ app.get("/:id", async (c) => {
 });
 
 //delete:id
+app.delete("/:id", async (c) => {
+	const id = c.req.param("id");
+	const res = await query("DELETE FROM drink WHERE id = $1", [id]);
+	return c.json(res);
+});
 
 //patch:id
 
