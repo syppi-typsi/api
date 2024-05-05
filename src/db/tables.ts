@@ -46,7 +46,7 @@ export const execute = async() => {
 
     try {
         const res = await query(alterTables, []);
-        console.log('If not already, table are altered');
+        console.log('If not already, tables are altered');
     } catch (error) {
         console.error(error);
     }
