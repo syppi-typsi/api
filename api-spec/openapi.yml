@@ -131,9 +131,6 @@ components:
         email:
           type: string
           description: "Email of user"
-        registered_on:
-          type: string
-          description: "ISO 8601 date and time of when the user was added"
     user_required:
       type: object
       description: "A user objects data, with required fields"
@@ -153,6 +150,9 @@ components:
             id:
               type: integer
               description: "ID of the user"
+            registered_on:
+              type: string
+              description: "ISO 8601 date and time of when the user was added"
         - $ref: "#/components/schemas/user_required"
     users:
       type: object
