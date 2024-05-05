@@ -12,6 +12,11 @@ app.get("/", async (c) => {
 });
 
 //post
+app.post("/", async (c) => {
+	const params: UserReqBody = await c.req.json();
+	const res = await query("INSERT INTO users (username, first_name, last_name, email) VALUES ($1, $2, $3, $4)", [params.username, params.first_name, params.last_name, params.email]);
+	return c.json(res);
+});
 
 //get:id
 app.get("/:id", async (c) => {
