@@ -554,13 +554,21 @@ paths:
           required: true
           schema:
             type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/user_data"
       responses:
         "200":
           description: OK
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/user_data"
+                $ref: "#/components/schemas/user"
+              examples:
+                example1:
+                  $ref: "#/components/examples/humanName"
 
   /places:
     get:
@@ -645,13 +653,18 @@ paths:
           required: true
           schema:
             type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/place_data"
       responses:
         "200":
           description: OK
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/place_data"
+                $ref: "#/components/schemas/place"
 
   /categories:
     get:
