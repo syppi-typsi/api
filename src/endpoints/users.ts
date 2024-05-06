@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { query } from "../db";
+import { error } from "console";
 
 const app = new Hono();
 
@@ -7,7 +8,7 @@ const app = new Hono();
 
 //get
 app.get("/", async (c) => {
-	const res = await query("SELECT * FROM users", []);
+	const res = await query("SELECT * FROM users");
 	return c.json(res);
 });
 
@@ -33,5 +34,11 @@ app.delete("/:id", async (c) => {
 });
 
 //patch:id
+app.patch("/:id", async (c) => {
+	const params: UserReqBody = await c.req.json();
+	const id = c.req.param("id");
+	const res = await query("UPDATE users username = $2, first_name = $3, last_name = $4, email = $5 WHERE id = $1", [id, params.username, params.first_name, params.last_name, params.email]);
+	return c.json(res);
+});
 
 export default app;

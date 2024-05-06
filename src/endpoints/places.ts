@@ -12,6 +12,11 @@ app.get("/", async (c) => {
 });
 
 //post
+app.post("/", async (c) => {
+	const params: placeReqBody = await c.req.json();
+	const res = await query("INSERT INTO places (name, address) VALUES ($1, $2)", [params.name, params.address]);
+	return c.json(res);
+});
 
 //get:id
 app.get("/:id", async (c) => {
@@ -28,5 +33,11 @@ app.delete("/:id", async (c) => {
 });
 
 //patch:id
+app.patch("/:id", async (c) => {
+	const params: placeReqBody = await c.req.json();
+	const id = c.req.param("id");
+	const res = await query("UPDATE places name = $2, address = $3 WHERE id = $1", [id, params.name, params.address]);
+	return c.json(res);
+});
 
 export default app;
