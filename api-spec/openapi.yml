@@ -527,6 +527,8 @@ paths:
               examples:
                 example1:
                   $ref: "#/components/examples/humanName"
+                example2:
+                  $ref: "#/components/examples/usernameOnly"
     delete:
       tags:
         - users
@@ -569,6 +571,8 @@ paths:
               examples:
                 example1:
                   $ref: "#/components/examples/humanName"
+                example2:
+                  $ref: "#/components/examples/usernameOnly"
 
   /places:
     get:
@@ -625,6 +629,11 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/place"
+              examples:
+                example1:
+                  $ref: "#/components/examples/Atso"
+                example2:
+                  $ref: "#/components/examples/Illegaard"
 
     delete:
       tags:
@@ -665,6 +674,11 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/place"
+              examples:
+                example1:
+                  $ref: "#/components/examples/Atso"
+                example2:
+                  $ref: "#/components/examples/Illegaard"
 
   /categories:
     get:
@@ -721,6 +735,11 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/category"
+              examples:
+                example1:
+                  $ref: "#/components/examples/Cocktails"
+                example2:
+                  $ref: "#/components/examples/Long drinks"
 
     delete:
       tags:
@@ -749,13 +768,23 @@ paths:
           required: true
           schema:
             type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/category_data"
       responses:
         "200":
           description: OK
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/category_data"
+                $ref: "#/components/schemas/category"
+              examples:
+                example1:
+                  $ref: "#/components/examples/Cocktails"
+                example2:
+                  $ref: "#/components/examples/Long drinks"
 
   /drinks:
     get:
@@ -850,13 +879,23 @@ paths:
           required: true
           schema:
             type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/drink_data"
       responses:
         "200":
           description: OK
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/drink_data"
+                $ref: "#/components/schemas/drink"
+              examples:
+                example1:
+                  $ref: "#/components/examples/Jägermeister"
+                example2:
+                  $ref: "#/components/examples/ALeCoqLongDrinkGrapefruit"
   /drinks/{id}/rate:
     put:
       tags:
