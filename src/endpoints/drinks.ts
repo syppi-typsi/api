@@ -15,7 +15,7 @@ app.get("/", async (c) => {
 //post
 app.post("/", async (c) => {
 	const params: drinkReqBody  = await c.req.json();
-	const res = await query("INSERT INTO drink (name, producer, brand, description, product_image, category, rating, volumes, abv, places, nutritional_value, added_on) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())", 
+	const res = await query("INSERT INTO drink (name, producer, brand, description, product_image, category, rating, volumes, abv, places, nutritional_value) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)", 
 	[params.name, params.producer, params.brand, params.description, params.product_image, params.category, params.rating, 
 		params.volumes, params.abv, params.places, params.nutritional_value]);
 	return c.json(res);
