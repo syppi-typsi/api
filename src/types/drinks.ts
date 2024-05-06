@@ -24,3 +24,8 @@ interface drinkReqBody {
         salt: number;
       };
 }
+
+interface drinkResReqBody extends Required<drinkReqBody>{
+  id: number;
+  added_on: string;
+}
