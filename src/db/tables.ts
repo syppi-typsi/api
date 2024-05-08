@@ -85,9 +85,11 @@ const drinkTable = `CREATE TABLE IF NOT EXISTS "drink" (
     );`;
 
 const ratingsTable = `CREATE TABLE IF NOT EXISTS "ratings" (
+    "id" serial NOT NULL,
     "user" int NOT NULL,
     "drink" int NOT NULL,
-    "rating" int
+    "rating" int,
+    PRIMARY KEY("id")
     );`;
 
 const alterTables = `
