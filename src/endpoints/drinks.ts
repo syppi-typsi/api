@@ -9,12 +9,13 @@ const app = new Hono();
 //get
 app.get("/", async (c) => {
 	const res = await query("SELECT * FROM drink", []);
-	var drinkPromises = res.rows.map(async (drink) => { // Map each row to a promise
+	const drinkPromises = res.rows.map(async (drink) => { // Map each row to a promise
 		const ratingsRes = await query("SELECT * FROM ratings WHERE drink = $1", [drink.id]);
 		const ratings = ratingsRes.rows.map((rating) => rating.rating);
 		// Reduces the array to a sum of all ratings, then divides by the number of ratings to get the average
 		const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
 		return {
+			id: drink.id,
 			added_on: drink.added_on,
 			name: drink.name,
 			producer: drink.producer,
@@ -48,7 +49,29 @@ app.post("/", async (c) => {
 app.get("/:id", async (c) => {
 	const id = c.req.param("id");
 	const res = await query("SELECT * FROM drink WHERE id = $1", [id]);
-	return c.json(res);
+	const drinkPromise = res.rows.map(async (drink) => { // Map each row to a promise
+		const ratingsRes = await query("SELECT * FROM ratings WHERE drink = $1", [drink.id]);
+		const ratings = ratingsRes.rows.map((rating) => rating.rating);
+		// Reduces the array to a sum of all ratings, then divides by the number of ratings to get the average
+		const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+		return {
+			id: drink.id,
+			added_on: drink.added_on,
+			name: drink.name,
+			producer: drink.producer,
+			brand: drink.brand,
+			description: drink.description,
+			product_image: drink.product_image,
+			category: drink.category,
+			rating: avgRating,
+			volumes: drink.volumes,
+			abv: drink.abv,
+			places: drink.places,
+			nutritional_value: drink.nutritional_value
+		};
+	});
+	const drink = await Promise.all(drinkPromise); // Wait for all promises to resolve
+	return c.json(drink);
 });
 
 //delete:id

@@ -9,7 +9,7 @@ const app = new Hono();
 //get
 app.get("/", async (c) => {
 	const res = await query("SELECT * FROM users");
-	return c.json(res);
+	return c.json(res.rows);
 });
 
 //post
@@ -23,7 +23,7 @@ app.post("/", async (c) => {
 app.get("/:id", async (c) => {
 	const id = c.req.param("id");
 	const res = await query("SELECT * FROM users WHERE id = $1", [id]);
-	return c.json(res);
+	return c.json(res.rows);
 });
 
 //delete:id
