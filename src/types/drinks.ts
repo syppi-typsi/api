@@ -25,7 +25,7 @@ interface drinkReqBody {
       };
 }
 
-interface drinkResReqBody extends Required<drinkReqBody>{
+interface drinkResBody extends Required<drinkReqBody>{
   id: number;
   added_on: string;
 }
