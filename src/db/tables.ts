@@ -133,7 +133,7 @@ const alterTables = `
         ALTER TABLE "ratings"
         ADD CONSTRAINT "rating_drink"
         FOREIGN KEY("drink") REFERENCES "drink"("id")
-        ON UPDATE NO ACTION ON DELETE NO ACTION;
+        ON UPDATE CASCADE ON DELETE CASCADE;
     EXCEPTION
         WHEN duplicate_table THEN
         WHEN duplicate_object THEN
@@ -144,7 +144,7 @@ const alterTables = `
         ALTER TABLE "ratings"
         ADD CONSTRAINT "rating_user"
         FOREIGN KEY("user") REFERENCES "users"("id")
-        ON UPDATE NO ACTION ON DELETE NO ACTION;
+        ON UPDATE CASCADE ON DELETE CASCADE;
     EXCEPTION
         WHEN duplicate_table THEN
         WHEN duplicate_object THEN
