@@ -9,7 +9,28 @@ const app = new Hono();
 //get
 app.get("/", async (c) => {
 	const res = await query("SELECT * FROM drink", []);
-	return c.json(res);
+	var drinkPromises = res.rows.map(async (drink) => { // Map each row to a promise
+		const ratingsRes = await query("SELECT * FROM ratings WHERE drink = $1", [drink.id]);
+		const ratings = ratingsRes.rows.map((rating) => rating.rating);
+		// Reduces the array to a sum of all ratings, then divides by the number of ratings to get the average
+		const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+		return {
+			added_on: drink.added_on,
+			name: drink.name,
+			producer: drink.producer,
+			brand: drink.brand,
+			description: drink.description,
+			product_image: drink.product_image,
+			category: drink.category,
+			rating: avgRating,
+			volumes: drink.volumes,
+			abv: drink.abv,
+			places: drink.places,
+			nutritional_value: drink.nutritional_value
+		};
+	});
+	const drinks = await Promise.all(drinkPromises); // Wait for all promises to resolve
+	return c.json(drinks);
 });
 
 //post
