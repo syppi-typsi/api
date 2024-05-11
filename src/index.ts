@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { execute } from "./db/tables"
+import { cors } from "hono/cors";
+import { execute } from "./db/tables";
 import "dotenv/config";
 
 import users from "./endpoints/users";
@@ -10,7 +11,9 @@ import categories from "./endpoints/categories";
 
 const app = new Hono();
 
-execute()
+execute();
+
+app.use(cors());
 
 app.get("/", (c) => {
 	return c.text("Hello Hono!");
