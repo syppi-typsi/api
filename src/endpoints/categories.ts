@@ -21,7 +21,7 @@ app.post("/", async (c) => {
 //get:id
 app.get("/:id", async (c) => {
 	const id = c.req.param("id");
-	const res = await query("SELECT * FROM category WHERE id = $1 RETURNING *", [id]);
+	const res = await query("SELECT * FROM category WHERE id = $1", [id]);
 	return c.json(res.rows[0]);
 });
 
