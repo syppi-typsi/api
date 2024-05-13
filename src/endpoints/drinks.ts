@@ -3,22 +3,24 @@ import { query } from "../db";
 
 const app = new Hono();
 
+async function ratingPromise(drink) {
+	// Map each row to a promise
+	const ratingsRes = await query("SELECT * FROM ratings WHERE drink = $1", [
+		drink.id,
+	]);
+	const ratings = ratingsRes.rows.map((rating) => rating.rating);
+	// Reduces the array to a sum of all ratings, then divides by the number of ratings to get the average
+	const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+	drink.rating = avgRating;
+	return drink;
+}
+
 //app.get("/", (c) => c.json("This is /drinks"));
 
 //get
 app.get("/", async (c) => {
 	const res = await query("SELECT * FROM drink", []);
-	const drinkPromises = res.rows.map(async (drink) => {
-		// Map each row to a promise
-		const ratingsRes = await query("SELECT * FROM ratings WHERE drink = $1", [
-			drink.id,
-		]);
-		const ratings = ratingsRes.rows.map((rating) => rating.rating);
-		// Reduces the array to a sum of all ratings, then divides by the number of ratings to get the average
-		const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
-		drink.rating = avgRating;
-		return drink;
-	});
+	const drinkPromises = res.rows.map(ratingPromise);
 	const drinks = await Promise.all(drinkPromises); // Wait for all promises to resolve
 	return c.json(drinks);
 });
@@ -41,12 +43,10 @@ app.post("/", async (c) => {
 			params.nutritional_value,
 		],
 	);
-	const drinkPromises = res.rows.map(async (drink) => {
-		// Map each row to a promise
+	const drinks = res.rows.map((drink) => {
 		drink.rating = null;
 		return drink;
 	});
-	const drinks = await Promise.all(drinkPromises); // Wait for all promises to resolve
 	return c.json(drinks[0]);
 });
 
@@ -54,17 +54,7 @@ app.post("/", async (c) => {
 app.get("/:id", async (c) => {
 	const id = c.req.param("id");
 	const res = await query("SELECT * FROM drink WHERE id = $1", [id]);
-	const drinkPromise = res.rows.map(async (drink) => {
-		// Map each row to a promise
-		const ratingsRes = await query("SELECT * FROM ratings WHERE drink = $1", [
-			drink.id,
-		]);
-		const ratings = ratingsRes.rows.map((rating) => rating.rating);
-		// Reduces the array to a sum of all ratings, then divides by the number of ratings to get the average
-		const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
-		drink.rating = avgRating;
-		return drink;
-	});
+	const drinkPromise = res.rows.map(ratingPromise);
 	const drink = await Promise.all(drinkPromise); // Wait for all promises to resolve
 	return c.json(drink[0]);
 });
@@ -73,17 +63,7 @@ app.get("/:id", async (c) => {
 app.delete("/:id", async (c) => {
 	const id = c.req.param("id");
 	const res = await query("DELETE FROM drink WHERE id = $1 RETURNING *", [id]);
-	const drinkPromise = res.rows.map(async (drink) => {
-		// Map each row to a promise
-		const ratingsRes = await query("SELECT * FROM ratings WHERE drink = $1", [
-			drink.id,
-		]);
-		const ratings = ratingsRes.rows.map((rating) => rating.rating);
-		// Reduces the array to a sum of all ratings, then divides by the number of ratings to get the average
-		const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
-		drink.rating = avgRating;
-		return drink;
-	});
+	const drinkPromise = res.rows.map(ratingPromise);
 	const drink = await Promise.all(drinkPromise); // Wait for all promises to resolve
 	return c.json(drink[0]);
 });
@@ -108,17 +88,7 @@ app.patch("/:id", async (c) => {
 			params.nutritional_value,
 		],
 	);
-	const drinkPromise = res.rows.map(async (drink) => {
-		// Map each row to a promise
-		const ratingsRes = await query("SELECT * FROM ratings WHERE drink = $1", [
-			drink.id,
-		]);
-		const ratings = ratingsRes.rows.map((rating) => rating.rating);
-		// Reduces the array to a sum of all ratings, then divides by the number of ratings to get the average
-		const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
-		drink.rating = avgRating;
-		return drink;
-	});
+	const drinkPromise = res.rows.map(ratingPromise);
 	const drink = await Promise.all(drinkPromise); // Wait for all promises to resolve
 	return c.json(drink[0]);
 });
