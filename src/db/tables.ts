@@ -81,6 +81,11 @@ const drinkTable = `CREATE TABLE IF NOT EXISTS "drink" (
     "abv" float,
     "places" int,
     "nutritional_value" json,
+    "search" tsvector GENERATED ALWAYS AS (
+        setweight(to_tsvector('simple',name),'A') || ' ' || 
+        setweight(to_tsvector('simple',coalesce(producer, '')),'B') || ' ' || 
+        setweight(to_tsvector('simple',coalesce(description, '')),'C') :: tsvector
+        ) STORED,
     PRIMARY KEY("id")
     );`;
 
@@ -117,6 +122,14 @@ const alterTables = `
         WHEN duplicate_object THEN
         RAISE NOTICE 'Table constraint drink_category already exists';
     END;
+
+    ALTER TABLE drink ADD COLUMN IF NOT EXISTS "search" tsvector GENERATED ALWAYS AS (
+        setweight(to_tsvector('simple',name),'A') || ' ' || 
+        setweight(to_tsvector('simple',coalesce(producer, '')),'B') || ' ' || 
+        setweight(to_tsvector('simple',coalesce(description, '')),'C') :: tsvector
+        ) STORED;
+
+    CREATE INDEX IF NOT EXISTS search_idx ON "drink" USING gin(search);
 
     BEGIN
         ALTER TABLE "category"
