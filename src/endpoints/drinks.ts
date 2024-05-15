@@ -49,7 +49,11 @@ function customSearch(searchInput: string) {
 	let out = searchInput.trim().split(/\s+/);
 	out = out.map((x) => (x === "or" ? "|" : x));
 	out = out.map((x) => (x?.startsWith("-") ? x.replace("-", "!") : x));
-	return out.join(" ").replaceAll(/(?<!\|)\s(?!\|)/g, " & ");
+	return out
+		.join(" ")
+		.replaceAll(/(?<!\|)\s(?!\|)/gi, " & ")
+		.replaceAll(/\b([^\s]+)/gi, "'$1'")
+		.replaceAll(/(?<!\s)'(?=\s|$)/gi, "':*");
 }
 
 //get
@@ -66,6 +70,8 @@ app.post("/search", async (c) => {
 	const offset = (params.page - 1) * params.limit;
 
 	if (params.search === undefined) params.search = "";
+
+	console.log(customSearch(params.search));
 
 	const countData = await query(
 		"SELECT count(*)::int AS count FROM drink WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($2)",
