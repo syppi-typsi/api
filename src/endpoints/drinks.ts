@@ -71,8 +71,6 @@ app.post("/search", async (c) => {
 
 	if (params.search === undefined) params.search = "";
 
-	console.log(customSearch(params.search));
-
 	const countData = await query(
 		"SELECT count(*)::int AS count FROM drink WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($2)",
 		[customSearch(params.search), params.filters.categories],
