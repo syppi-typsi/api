@@ -1,5 +1,10 @@
 import { Hono } from "hono";
 import { query } from "../db";
+import {
+	Ordering,
+	type drinkReqBody,
+	type drinkSearchReqBody,
+} from "../types/drinks";
 
 const app = new Hono();
 
@@ -15,7 +20,30 @@ async function ratingPromise(drink) {
 	return drink;
 }
 
-//app.get("/", (c) => c.json("This is /drinks"));
+function orderDrinks(drinks, ordering: Ordering) {
+	// choosing correct ordering
+	switch (ordering) {
+		case Ordering.Alphabetic:
+			drinks.sort((a, b) => {
+				return a.name.localeCompare(b.name);
+			});
+			break;
+		case Ordering.RecentlyAdded:
+			drinks.sort((a, b) => {
+				return new Date(b.added_on) - new Date(a.added_on);
+			});
+			break;
+		case Ordering.TopRated:
+			drinks.sort((a, b) => {
+				if (Number.isNaN(a.rating)) return 1;
+				if (Number.isNaN(b.rating)) return -1;
+				return b.rating - a.rating;
+			});
+			break;
+		case Ordering.MostRelevant:
+			break;
+	}
+}
 
 //get
 app.get("/", async (c) => {
@@ -23,6 +51,43 @@ app.get("/", async (c) => {
 	const drinkPromises = res.rows.map(ratingPromise);
 	const drinks = await Promise.all(drinkPromises); // Wait for all promises to resolve
 	return c.json(drinks);
+});
+
+//post/search
+app.post("/search", async (c) => {
+	const params: drinkSearchReqBody = await c.req.json();
+	const offset = (params.page - 1) * params.limit;
+
+	if (params.search === undefined) params.search = "";
+
+	const countData = await query(
+		"SELECT count(*)::int AS count FROM drink WHERE ($1 = '' OR search @@ websearch_to_tsquery('simple',$1)) AND category = ANY($2)",
+		[params.search, params.filters.categories],
+	);
+
+	let drinks;
+
+	if (countData.rows[0].count > offset) {
+		const res = await query(
+			"SELECT *, ts_rank(search, websearch_to_tsquery('simple',$1)) as rank FROM drink WHERE ($1 = '' OR search @@ websearch_to_tsquery('simple',$1)) AND category = ANY($4) ORDER BY rank DESC LIMIT $2 OFFSET $3",
+			[params.search, params.limit, offset, params.filters.categories],
+		);
+		const drinkPromises = res.rows.map(ratingPromise);
+		drinks = await Promise.all(drinkPromises); // Wait for all promises to resolve
+		orderDrinks(drinks, params.ordering);
+	} else {
+		drinks = [];
+	}
+
+	const result = {
+		totalPages: Math.ceil(countData.rows[0].count / params.limit),
+		totalResults: countData.rows[0].count,
+		currentPage: params.page,
+		limit: params.limit,
+		result: drinks,
+	};
+
+	return c.json(result);
 });
 
 //post
