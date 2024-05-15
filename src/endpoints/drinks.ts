@@ -45,6 +45,13 @@ function orderDrinks(drinks, ordering: Ordering) {
 	}
 }
 
+function customSearch(searchInput: string) {
+	let out = searchInput.trim().split(/\s+/);
+	out = out.map((x) => (x === "or" ? "|" : x));
+	out = out.map((x) => (x?.startsWith("-") ? x.replace("-", "!") : x));
+	return out.join(" ").replaceAll(/(?<!\|)\s(?!\|)/g, " & ");
+}
+
 //get
 app.get("/", async (c) => {
 	const res = await query("SELECT * FROM drink", []);
@@ -61,16 +68,21 @@ app.post("/search", async (c) => {
 	if (params.search === undefined) params.search = "";
 
 	const countData = await query(
-		"SELECT count(*)::int AS count FROM drink WHERE ($1 = '' OR search @@ websearch_to_tsquery('simple',$1)) AND category = ANY($2)",
-		[params.search, params.filters.categories],
+		"SELECT count(*)::int AS count FROM drink WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($2)",
+		[customSearch(params.search), params.filters.categories],
 	);
 
 	let drinks;
 
 	if (countData.rows[0].count > offset) {
 		const res = await query(
-			"SELECT *, ts_rank(search, websearch_to_tsquery('simple',$1)) as rank FROM drink WHERE ($1 = '' OR search @@ websearch_to_tsquery('simple',$1)) AND category = ANY($4) ORDER BY rank DESC LIMIT $2 OFFSET $3",
-			[params.search, params.limit, offset, params.filters.categories],
+			"SELECT *, ts_rank(search, websearch_to_tsquery('simple',$1)) as rank FROM drink WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($4) ORDER BY rank DESC LIMIT $2 OFFSET $3",
+			[
+				customSearch(params.search),
+				params.limit,
+				offset,
+				params.filters.categories,
+			],
 		);
 		const drinkPromises = res.rows.map(ratingPromise);
 		drinks = await Promise.all(drinkPromises); // Wait for all promises to resolve
