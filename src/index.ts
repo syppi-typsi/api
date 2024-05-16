@@ -2,6 +2,7 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { execute } from "./db/tables";
+import { auth } from "./security/header";
 import "dotenv/config";
 
 import users from "./endpoints/users";
@@ -14,6 +15,7 @@ const app = new Hono();
 execute();
 
 app.use(cors());
+app.use(auth)
 
 app.get("/", (c) => {
 	return c.text("Hello Hono!");
