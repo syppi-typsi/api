@@ -110,8 +110,7 @@ const alterTables = `
     BEGIN
         ALTER TABLE "drink"
         ADD CONSTRAINT "drink_category"
-        FOREIGN KEY("category") REFERENCES "category"("id")
-        ON UPDATE CASCADE ON DELETE CASCADE;
+        FOREIGN KEY("category") REFERENCES "category"("id");
     EXCEPTION
         WHEN duplicate_table THEN
         WHEN duplicate_object THEN
