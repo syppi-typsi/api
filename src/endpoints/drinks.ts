@@ -190,7 +190,10 @@ app.patch("/:id", async (c) => {
 //get:id/rate
 app.get("/:id/rate", async (c) => {
 	const id = c.req.param("id");
-	const res = await query('SELECT * FROM ratings WHERE "user" = 1 AND "drink" = $1', [id]);
+	const res = await query(
+		'SELECT * FROM ratings WHERE "user" = 1 AND "drink" = $1',
+		[id],
+	);
 	return c.json(res.rows[0]);
 });
 
@@ -199,24 +202,42 @@ app.put("/:id/rate", async (c) => {
 	const id = c.req.param("id");
 	const params: RateReqBody = await c.req.json();
 
-	const res_info = await query('SELECT id FROM ratings WHERE "user" = 1 AND drink = $1', [id]);
-	
-	if (res_info.rows[0] === undefined) { // if user doesn't have a rating for the drink
-		const res = await query('INSERT INTO ratings ("user", drink, rating) VALUES (1, $1, $2) RETURNING *', [id, params.rating]);
+	const res_info = await query(
+		'SELECT id FROM ratings WHERE "user" = 1 AND drink = $1',
+		[id],
+	);
+
+	if (res_info.rows[0] === undefined) {
+		// if user doesn't have a rating for the drink
+		const res = await query(
+			'INSERT INTO ratings ("user", drink, rating) VALUES (1, $1, $2) RETURNING *',
+			[id, params.rating],
+		);
 		return c.json(res.rows[0]);
 	} else {
-		const res = await query('UPDATE ratings SET rating = $2 WHERE id = $1 RETURNING *', [res_info.rows[0].id, params.rating]);
-		console.log(res)
+		const res = await query(
+			"UPDATE ratings SET rating = $2 WHERE id = $1 RETURNING *",
+			[res_info.rows[0].id, params.rating],
+		);
+		console.log(res);
 		return c.json(res.rows[0]);
 	}
 });
 
 //delete:id/rate
 app.delete("/:id/rate", async (c) => {
-	const id = c.req.param('id');
-	const res_info = await query('SELECT id FROM ratings WHERE "user" = 1 AND drink = $1', [id]);
+	const id = c.req.param("id");
+	const res_info = await query(
+		'SELECT id FROM ratings WHERE "user" = 1 AND drink = $1',
+		[id],
+	);
 
-	const res = await query('DELETE FROM ratings WHERE id = $1 RETURNING *', [res_info.rows[0].id]);
+	if (res_info.rows.length === 0) {
+		return c.body(null);
+	}
+	const res = await query("DELETE FROM ratings WHERE id = $1 RETURNING *", [
+		res_info.rows[0].id,
+	]);
 	return c.json(res.rows[0]);
 });
 
