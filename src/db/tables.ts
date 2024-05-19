@@ -79,7 +79,7 @@ const drinkTable = `CREATE TABLE IF NOT EXISTS "drink" (
     "added_on" TIMESTAMPTZ NOT NULL DEFAULT now(),
     "volumes" integer[],
     "abv" float,
-    "places" integer[],
+    "places" int,
     "nutritional_value" json,
     "search" tsvector GENERATED ALWAYS AS (
         setweight(to_tsvector('simple',name),'A') || ' ' || 
