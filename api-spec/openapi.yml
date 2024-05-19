@@ -209,6 +209,9 @@ components:
         name:
           type: string
           description: "Name of category"
+        alcoholic:
+          type: boolean
+          description: "is alcoholic"
         parent:
           type: integer
           description: "ID of parent"
@@ -336,10 +339,10 @@ components:
         { "id": 7, "name": "Atso Bar", "address": "Rüütli 12, 51007 Tartu" }
     Cocktails:
       summary: "Cocktails"
-      value: { "id": 89, "name": "Cocktails", "parent": 56 }
+      value: { "id": 89, "name": "Cocktails", "alcoholic": TRUE, "parent": 56 }
     Long drinks:
       summary: "Long drinks"
-      value: { "id": 144, "name": "Long drinks", "parent": 9 }
+      value: { "id": 144, "name": "Long drinks", "alcoholic": TRUE, "parent": 9 }
     Rate_Fireball:
       summary: "Rating of Fireball"
       value: { "id": 14, "user": 1, "drink": 56, "rating": 100 }

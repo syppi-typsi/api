@@ -64,6 +64,7 @@ const placesTable = `CREATE TABLE IF NOT EXISTS "places" (
 const categoryTable = `CREATE TABLE IF NOT EXISTS "category" (
     "id" serial NOT NULL,
     "name" varchar(255) NOT NULL,
+    "alcoholic" boolean NOT NULL,
     "parent" int,
     PRIMARY KEY("id")
     );`;
