@@ -72,7 +72,7 @@ app.post("/search", async (c) => {
 
 	if (countData.rows[0].count > offset) {
 		const res = await query(
-			`SELECT *, ts_rank(search, websearch_to_tsquery('simple',$1)) AS rank, (SELECT ROUND(AVG(rating)) FROM ratings WHERE drink = d.id) AS rating FROM drink as d WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($4) AND ((abv = 0 OR abv IS NULL) OR $5::boolean) ORDER BY ${orderDrinks(
+			`SELECT *, ts_rank(search, to_tsquery('simple',$1)) AS rank, (SELECT ROUND(AVG(rating)) FROM ratings WHERE drink = d.id) AS rating FROM drink as d WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($4) AND ((abv = 0 OR abv IS NULL) OR $5::boolean) ORDER BY ${orderDrinks(
 				params.ordering,
 			)} LIMIT $2 OFFSET $3`,
 			[
