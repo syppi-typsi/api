@@ -1,5 +1,6 @@
 interface categoryReqBody {
     name: string;
+    alcoholic: boolean;
     parent?: number;
 }
 
