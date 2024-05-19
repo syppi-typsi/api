@@ -8,40 +8,28 @@ import {
 
 const app = new Hono();
 
-async function ratingPromise(drink) {
-	// Map each row to a promise
-	const ratingsRes = await query("SELECT * FROM ratings WHERE drink = $1", [
-		drink.id,
-	]);
-	const ratings = ratingsRes.rows.map((rating) => rating.rating);
-	// Reduces the array to a sum of all ratings, then divides by the number of ratings to get the average
-	const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
-	drink.rating = avgRating;
-	return drink;
-}
+// async function ratingPromise(drink) {
+// 	// get the average of the drink
+// 	const ratingsRes = await query(
+// 		"SELECT ROUND(AVG(rating)) AS average FROM ratings WHERE drink = $1",
+// 		[drink.id],
+// 	);
 
-function orderDrinks(drinks, ordering: Ordering) {
+// 	drink.rating = ratingsRes.rows[0].average;
+// 	return drink;
+// }
+
+function orderDrinks(ordering: Ordering) {
 	// choosing correct ordering
 	switch (ordering) {
 		case Ordering.Alphabetic:
-			drinks.sort((a, b) => {
-				return a.name.localeCompare(b.name);
-			});
-			break;
+			return "name ASC";
 		case Ordering.RecentlyAdded:
-			drinks.sort((a, b) => {
-				return new Date(b.added_on) - new Date(a.added_on);
-			});
-			break;
+			return "added_on DESC";
 		case Ordering.TopRated:
-			drinks.sort((a, b) => {
-				if (Number.isNaN(a.rating)) return 1;
-				if (Number.isNaN(b.rating)) return -1;
-				return b.rating - a.rating;
-			});
-			break;
+			return "rating DESC";
 		case Ordering.MostRelevant:
-			break;
+			return "rank DESC";
 	}
 }
 
@@ -58,10 +46,10 @@ function customSearch(searchInput: string) {
 
 //get
 app.get("/", async (c) => {
-	const res = await query("SELECT * FROM drink", []);
-	const drinkPromises = res.rows.map(ratingPromise);
-	const drinks = await Promise.all(drinkPromises); // Wait for all promises to resolve
-	return c.json(drinks);
+	const res = await query(
+		"SELECT *, (SELECT ROUND(AVG(rating)) FROM ratings WHERE drink = d.id) AS rating FROM drink as d",
+	);
+	return c.json(res.rows);
 });
 
 //post/search
@@ -84,7 +72,9 @@ app.post("/search", async (c) => {
 
 	if (countData.rows[0].count > offset) {
 		const res = await query(
-			"SELECT *, ts_rank(search, websearch_to_tsquery('simple',$1)) as rank FROM drink WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($4) AND ((abv = 0 OR abv IS NULL) OR $5::boolean) ORDER BY rank DESC LIMIT $2 OFFSET $3",
+			`SELECT *, ts_rank(search, websearch_to_tsquery('simple',$1)) AS rank, (SELECT ROUND(AVG(rating)) FROM ratings WHERE drink = d.id) AS rating FROM drink as d WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($4) AND ((abv = 0 OR abv IS NULL) OR $5::boolean) ORDER BY ${orderDrinks(
+				params.ordering,
+			)} LIMIT $2 OFFSET $3`,
 			[
 				customSearch(params.search),
 				params.limit,
@@ -93,9 +83,7 @@ app.post("/search", async (c) => {
 				params.filters.alcohol,
 			],
 		);
-		const drinkPromises = res.rows.map(ratingPromise);
-		drinks = await Promise.all(drinkPromises); // Wait for all promises to resolve
-		orderDrinks(drinks, params.ordering);
+		drinks = res.rows;
 	} else {
 		drinks = [];
 	}
@@ -139,57 +127,56 @@ app.post("/", async (c) => {
 //get:id
 app.get("/:id", async (c) => {
 	const id = c.req.param("id");
-	const res = await query("SELECT * FROM drink WHERE id = $1", [id]);
-	const drinkPromise = res.rows.map(ratingPromise);
-	const drink = await Promise.all(drinkPromise); // Wait for all promises to resolve
-	return c.json(drink[0]);
+	const res = await query(
+		"SELECT *, (SELECT ROUND(AVG(rating)) FROM ratings WHERE drink = $1) AS rating FROM drink WHERE id = $1",
+		[id],
+	);
+	return c.json(res.rows[0]);
 });
 
 //delete:id
 app.delete("/:id", async (c) => {
 	const id = c.req.param("id");
-	const res = await query("DELETE FROM drink WHERE id = $1 RETURNING *", [id]);
-	const drinkPromise = res.rows.map(ratingPromise);
-	const drink = await Promise.all(drinkPromise); // Wait for all promises to resolve
-	return c.json(drink[0]);
+	const res = await query(
+		"DELETE FROM drink WHERE id = $1 RETURNING *, (SELECT ROUND(AVG(rating)) FROM ratings WHERE drink = $1) AS rating",
+		[id],
+	);
+	return c.json(res.rows[0]);
 });
 
 //patch:id
-app.patch("/:id", async (c) => {
-	const params: drinkReqBody = await c.req.json();
-	const id = c.req.param("id");
-	const res = await query(
-		"UPDATE drink SET name = $2, producer = $3, brand = $4, description = $5, product_image = $6, category = $7, volumes = $8, abv = $9, places = $10, nutritional_value = $11 WHERE id = $1 RETURNING *",
-		[
-			id,
-			params.name,
-			params.producer,
-			params.brand,
-			params.description,
-			params.product_image,
-			params.category,
-			params.volumes,
-			params.abv,
-			params.places,
-			params.nutritional_value,
-		],
-	);
-	const drinkPromise = res.rows.map(ratingPromise);
-	const drink = await Promise.all(drinkPromise); // Wait for all promises to resolve
-	return c.json(drink[0]);
-});
 
-//get:id/rate
+// !!!!!!!
+// needs to be rewritten, doesn't conform to API spec
+// !!!!!!!
 
-//put:id/rate
-
-//delete:id/rate
+// app.patch("/:id", async (c) => {
+// 	const params: drinkReqBody = await c.req.json();
+// 	const id = c.req.param("id");
+// 	const res = await query(
+// 		"UPDATE drink SET name = $2, producer = $3, brand = $4, description = $5, product_image = $6, category = $7, volumes = $8, abv = $9, places = $10, nutritional_value = $11 WHERE id = $1 RETURNING *, (SELECT ROUND(AVG(rating)) FROM ratings WHERE drink = $1) AS rating",
+// 		[
+// 			id,
+// 			params.name,
+// 			params.producer,
+// 			params.brand,
+// 			params.description,
+// 			params.product_image,
+// 			params.category,
+// 			params.volumes,
+// 			params.abv,
+// 			params.places,
+// 			params.nutritional_value,
+// 		],
+// 	);
+// 	return c.json(res.rows[0]);
+// });
 
 //**********************************************//
-//												//
-// 				HARDCODED DEMOUSER              //
-// 			THIS IS A TEMPORARY SOLUTION        //
-//												//
+//																							//
+//				HARDCODED DEMOUSER										//
+//			THIS IS A TEMPORARY SOLUTION						//
+//																							//
 //**********************************************//
 
 //get:id/rate
