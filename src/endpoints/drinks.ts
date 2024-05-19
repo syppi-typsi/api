@@ -15,7 +15,7 @@ async function ratingPromise(drink) {
 	]);
 	const ratings = ratingsRes.rows.map((rating) => rating.rating);
 	// Reduces the array to a sum of all ratings, then divides by the number of ratings to get the average
-	const avgRating = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+	const avgRating = Math.round(ratings.reduce((a, b) => a + b, 0) / ratings.length);
 	drink.rating = avgRating;
 	return drink;
 }
