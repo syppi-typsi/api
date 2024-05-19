@@ -72,20 +72,25 @@ app.post("/search", async (c) => {
 	if (params.search === undefined) params.search = "";
 
 	const countData = await query(
-		"SELECT count(*)::int AS count FROM drink WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($2)",
-		[customSearch(params.search), params.filters.categories],
+		"SELECT count(*)::int AS count FROM drink WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($2) AND ((abv = 0 OR abv IS NULL) OR $3::boolean)",
+		[
+			customSearch(params.search),
+			params.filters.categories,
+			params.filters.alcohol,
+		],
 	);
 
 	let drinks;
 
 	if (countData.rows[0].count > offset) {
 		const res = await query(
-			"SELECT *, ts_rank(search, websearch_to_tsquery('simple',$1)) as rank FROM drink WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($4) ORDER BY rank DESC LIMIT $2 OFFSET $3",
+			"SELECT *, ts_rank(search, websearch_to_tsquery('simple',$1)) as rank FROM drink WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($4) AND ((abv = 0 OR abv IS NULL) OR $5::boolean) ORDER BY rank DESC LIMIT $2 OFFSET $3",
 			[
 				customSearch(params.search),
 				params.limit,
 				offset,
 				params.filters.categories,
+				params.filters.alcohol,
 			],
 		);
 		const drinkPromises = res.rows.map(ratingPromise);
