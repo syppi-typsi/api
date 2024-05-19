@@ -240,6 +240,40 @@ components:
           description: "Array of categories"
           items:
             $ref: "#/components/schemas/category"
+    rate_data:
+      type: object
+      description: "A rate objects data"
+      properties:
+        user:
+          type: integer
+          description: "id of rate user"
+        drink:
+          type: integer
+          description: "id of rate drink"
+        rating:
+          type: integer
+          description: "rating of rate"
+    rate_required:
+      type: object
+      description: "A rate objects data, with required fields"
+      required:
+        - user
+        - drink
+        - rating
+      allOf:
+        - $ref: "#/components/schemas/rate_data"
+    rate:
+      type: object
+      description: "A rate object"
+      allOf:
+        - type: object
+          required:
+            - id
+          properties:
+            id:
+              type: integer
+              description: "ID of the rate"
+        - $ref: "#/components/schemas/rate_required"
     query_simple:
       type: object
       description: "Simple query parameters"
@@ -306,6 +340,12 @@ components:
     Long drinks:
       summary: "Long drinks"
       value: { "id": 144, "name": "Long drinks", "parent": 9 }
+    Rate_Fireball:
+      summary: "Rating of Fireball"
+      value: { "id": 14, "user": 1, "drink": 56, "rating": 100 }
+    Rate_Red_Bull:
+      summary: "Rating of Red Bull"
+      value: { "id": 21, "user": 45, "drink": 95 , "rating": 80}
     query_limited:
       summary: Search for "ice"
       value:
@@ -897,6 +937,28 @@ paths:
                 example2:
                   $ref: "#/components/examples/ALeCoqLongDrinkGrapefruit"
   /drinks/{id}/rate:
+    get:
+      tags:
+        - drinks
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses: 
+        "200":
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/rate"
+              examples:
+                example1:
+                  $ref: "#/components/examples/Rate_Fireball"
+                example2:
+                  $ref: "#/components/examples/Rate_Red_Bull"
     put:
       tags:
         - drinks
@@ -907,28 +969,42 @@ paths:
           required: true
           schema:
             type: integer
-        # - name: rating
-        #   in: query
-        #   required: true
-        #   schema:
-        #     type: integer
       requestBody:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                rating:
-                  type: integer
-            examples:
-              test:
-                summary: Example
-                value:
-                  rating: 70
+              $ref: "#/components/schemas/rate_required"
       responses:
         "200":
-          description: OK
+          description: Responds back with the added rating
           content:
-            "application/json":
+            application/json:
               schema:
-                $ref: "#/components/schemas/drink"
+                $ref: "#/components/schemas/rate"
+              examples:
+                example1:
+                  $ref: "#/components/examples/Rate_Fireball"
+                example2:
+                  $ref: "#/components/examples/Rate_Red_Bull"
+    delete:
+      tags:
+        - drinks
+      description: ""
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses: # REPLACE
+        "200":
+          description: Responds with rating that was just deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/rate"
+              examples:
+                example1:
+                  $ref: "#/components/examples/Rate_Fireball"
+                example2:
+                  $ref: "#/components/examples/Rate_Red_Bull"
