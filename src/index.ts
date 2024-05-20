@@ -1,21 +1,21 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { execute } from "./db/tables";
-import { auth } from "./security/header";
+import { execute } from "./db/tables.js";
+import { auth } from "./security/header.js";
 import "dotenv/config";
 
-import users from "./endpoints/users";
-import drinks from "./endpoints/drinks";
-import places from "./endpoints/places";
-import categories from "./endpoints/categories";
+import users from "./endpoints/users.js";
+import drinks from "./endpoints/drinks.js";
+import places from "./endpoints/places.js";
+import categories from "./endpoints/categories.js";
 
 const app = new Hono();
 
 execute();
 
 app.use(cors());
-app.use(auth)
+app.use(auth);
 
 app.get("/", (c) => {
 	return c.text("Hello Hono!");

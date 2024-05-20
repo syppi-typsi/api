@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { query } from "../db";
+import { query } from "../db/index.js";
 
 const app = new Hono();
 
@@ -13,8 +13,11 @@ app.get("/", async (c) => {
 
 //post
 app.post("/", async (c) => {
-	const params: categoryReqBody  = await c.req.json();
-	const res = await query("INSERT INTO category (name, alcoholic, parent) VALUES ($1, $2, $3) RETURNING *", [params.name, params.alcoholic, params.parent]);
+	const params: categoryReqBody = await c.req.json();
+	const res = await query(
+		"INSERT INTO category (name, alcoholic, parent) VALUES ($1, $2, $3) RETURNING *",
+		[params.name, params.alcoholic, params.parent],
+	);
 	return c.json(res.rows[0]);
 });
 
@@ -24,11 +27,13 @@ app.get("/:id", async (c) => {
 	const res = await query("SELECT * FROM category WHERE id = $1", [id]);
 	return c.json(res.rows[0]);
 });
-	
+
 //delete:id
 app.delete("/:id", async (c) => {
 	const id = c.req.param("id");
-	const res = await query("DELETE FROM category WHERE id = $1 RETURNING *", [id]);
+	const res = await query("DELETE FROM category WHERE id = $1 RETURNING *", [
+		id,
+	]);
 	return c.json(res.rows[0]);
 });
 

@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { query } from "../db";
+import { query } from "../db/index.js";
 
 const app = new Hono();
 
@@ -14,7 +14,10 @@ app.get("/", async (c) => {
 //post
 app.post("/", async (c) => {
 	const params: placeReqBody = await c.req.json();
-	const res = await query("INSERT INTO places (name, address) VALUES ($1, $2) RETURNING *", [params.name, params.address]);
+	const res = await query(
+		"INSERT INTO places (name, address) VALUES ($1, $2) RETURNING *",
+		[params.name, params.address],
+	);
 	return c.json(res.rows[0]);
 });
 
@@ -36,7 +39,10 @@ app.delete("/:id", async (c) => {
 app.patch("/:id", async (c) => {
 	const params: placeReqBody = await c.req.json();
 	const id = c.req.param("id");
-	const res = await query("UPDATE places SET name = $2, address = $3 WHERE id = $1 RETURNING *", [id, params.name, params.address]);
+	const res = await query(
+		"UPDATE places SET name = $2, address = $3 WHERE id = $1 RETURNING *",
+		[id, params.name, params.address],
+	);
 	return c.json(res.rows[0]);
 });
 

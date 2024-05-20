@@ -5,7 +5,7 @@ interface UserReqBody {
 	email: string;
 }
 
-interface UserResBody extends Required<UserReqBody>{
+interface UserResBody extends Required<UserReqBody> {
 	id: number;
 	registered_on: string;
-  }
+}

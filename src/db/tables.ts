@@ -1,4 +1,4 @@
-import { query } from "./index";
+import { query } from "./index.js";
 
 export const execute = async () => {
 	try {

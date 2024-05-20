@@ -1,10 +1,10 @@
 import { Hono } from "hono";
-import { query } from "../db";
+import { query } from "../db/index.js";
 import {
 	Ordering,
 	type drinkReqBody,
 	type drinkSearchReqBody,
-} from "../types/drinks";
+} from "../types/drinks.js";
 
 const app = new Hono();
 

@@ -4,6 +4,6 @@ interface RateReqBody {
 	rating: number;
 }
 
-interface RateResBody extends Required<RateReqBody>{
+interface RateResBody extends Required<RateReqBody> {
 	id: number;
-  }
+}

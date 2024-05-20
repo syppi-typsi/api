@@ -43,6 +43,7 @@ export interface drinkSearchReqBody {
 	page: number;
 	filters: {
 		categories: number[];
+		alcohol: boolean;
 	};
 	ordering: Ordering;
 }

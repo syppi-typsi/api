@@ -1,8 +1,8 @@
 interface placeReqBody {
-    name: string;
-    address: string;
+	name: string;
+	address: string;
 }
 
-interface placeResBody extends Required<placeReqBody>{
-    id: number;
+interface placeResBody extends Required<placeReqBody> {
+	id: number;
 }
