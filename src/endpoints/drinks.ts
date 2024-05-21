@@ -35,7 +35,7 @@ function orderDrinks(ordering: Ordering) {
 
 function customSearch(searchInput: string) {
 	let out = searchInput.trim().split(/\s+/);
-	if (out[out.length - 1] === "or") {
+	while (out[out.length - 1] === "or" || out[out.length - 1] === "-") {
 		out.pop();
 	}
 	out = out.map((x) => (x === "or" ? "|" : x));
