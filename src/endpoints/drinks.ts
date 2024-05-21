@@ -215,7 +215,6 @@ app.put("/:id/rate", async (c) => {
 			"UPDATE ratings SET rating = $2 WHERE id = $1 RETURNING *",
 			[res_info.rows[0].id, params.rating],
 		);
-		console.log(res);
 		return c.json(res.rows[0]);
 	}
 });
