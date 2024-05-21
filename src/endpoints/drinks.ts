@@ -35,6 +35,9 @@ function orderDrinks(ordering: Ordering) {
 
 function customSearch(searchInput: string) {
 	let out = searchInput.trim().split(/\s+/);
+	if (out[out.length - 1] === "or") {
+		out.pop();
+	}
 	out = out.map((x) => (x === "or" ? "|" : x));
 	out = out.map((x) => (x?.startsWith("-") ? x.replace("-", "!") : x));
 	return out
@@ -59,13 +62,11 @@ app.post("/search", async (c) => {
 
 	if (params.search === undefined) params.search = "";
 
+	const searchFormatted = customSearch(params.search);
+
 	const countData = await query(
 		"SELECT count(*)::int AS count FROM drink WHERE ($1 = '' OR search @@ to_tsquery('simple',$1)) AND category = ANY($2) AND ((abv = 0 OR abv IS NULL) OR $3::boolean)",
-		[
-			customSearch(params.search),
-			params.filters.categories,
-			params.filters.alcohol,
-		],
+		[searchFormatted, params.filters.categories, params.filters.alcohol],
 	);
 
 	let drinks;
@@ -76,7 +77,7 @@ app.post("/search", async (c) => {
 				params.ordering,
 			)} LIMIT $2 OFFSET $3`,
 			[
-				customSearch(params.search),
+				searchFormatted,
 				params.limit,
 				offset,
 				params.filters.categories,
